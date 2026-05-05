@@ -1,0 +1,5 @@
+.venv/
+.env
+__pycache__/
+*.pyc
+rush_success.json

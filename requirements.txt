@@ -1,0 +1,4 @@
+aiohttp>=3.9
+ntplib>=0.4
+python-dotenv>=1.0
+rich>=13.0
