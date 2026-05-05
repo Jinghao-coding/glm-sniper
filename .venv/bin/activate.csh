@@ -31,15 +31,15 @@ alias deactivate 'test $?_OLD_VIRTUAL_PATH != 0 && setenv PATH "$_OLD_VIRTUAL_PA
 # Unset irrelevant variables.
 deactivate nondestructive
 
-setenv VIRTUAL_ENV '/Users/jinghao/code/agents/glm-dingyu/.venv'
+setenv VIRTUAL_ENV '/Users/bytedance/github/glm-sniper/.venv'
 
 set _OLD_VIRTUAL_PATH="$PATH:q"
 setenv PATH "$VIRTUAL_ENV:q/bin:$PATH:q"
 
 
 
-if ('glm-dingyu' != "") then
-    setenv VIRTUAL_ENV_PROMPT 'glm-dingyu'
+if ('glm-sniper' != "") then
+    setenv VIRTUAL_ENV_PROMPT 'glm-sniper'
 else
     setenv VIRTUAL_ENV_PROMPT "$VIRTUAL_ENV:t:q"
 endif

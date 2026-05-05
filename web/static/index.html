@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GLM Sniper</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0f172a;--card:#1e293b;--border:#334155;--text:#e2e8f0;--dim:#94a3b8;--accent:#38bdf8;--green:#4ade80;--red:#f87171;--yellow:#fbbf24;--purple:#a78bfa}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.header{background:var(--card);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;gap:12px}
+.header h1{font-size:18px;font-weight:600}
+.header .dot{width:8px;height:8px;border-radius:50%;background:var(--green)}
+.tabs{display:flex;gap:0;background:var(--card);border-bottom:1px solid var(--border);padding:0 24px}
+.tab{padding:10px 20px;cursor:pointer;color:var(--dim);border-bottom:2px solid transparent;font-size:14px;transition:all .2s}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.content{padding:24px;max-width:1200px;margin:0 auto}
+.panel{display:none}
+.panel.active{display:block}
+.card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:16px}
+.card h3{font-size:14px;color:var(--dim);margin-bottom:12px;text-transform:uppercase;letter-spacing:.5px}
+.row{display:flex;gap:16px;flex-wrap:wrap}
+.col{flex:1;min-width:280px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:8px 12px;color:var(--dim);border-bottom:1px solid var(--border);font-weight:500}
+td{padding:8px 12px;border-bottom:1px solid var(--border)}
+tr:hover td{background:rgba(56,189,248,.05)}
+input,select,textarea{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text);font-size:13px;width:100%;outline:none;transition:border-color .2s}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+label{display:block;font-size:12px;color:var(--dim);margin-bottom:4px;margin-top:8px}
+.btn{padding:8px 16px;border:none;border-radius:6px;cursor:pointer;font-size:13px;font-weight:500;transition:all .2s}
+.btn-primary{background:var(--accent);color:#000}
+.btn-primary:hover{opacity:.85}
+.btn-danger{background:var(--red);color:#fff}
+.btn-danger:hover{opacity:.85}
+.btn-success{background:var(--green);color:#000}
+.btn-success:hover{opacity:.85}
+.btn-sm{padding:4px 10px;font-size:12px}
+.actions{display:flex;gap:8px;margin-top:12px}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:16px}
+.stat-item{background:var(--bg);border-radius:6px;padding:12px;text-align:center}
+.stat-item .value{font-size:24px;font-weight:700;color:var(--accent)}
+.stat-item .label{font-size:11px;color:var(--dim);margin-top:4px}
+.log-area{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:12px;height:300px;overflow-y:auto;font-family:'SF Mono',Monaco,monospace;font-size:12px;line-height:1.6}
+.log-line{padding:1px 0}
+.log-line.success{color:var(--green)}
+.log-line.error{color:var(--red)}
+.log-line.warn{color:var(--yellow)}
+.log-line.info{color:var(--dim)}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:500}
+.badge-success{background:rgba(74,222,128,.15);color:var(--green)}
+.badge-failed{background:rgba(248,113,113,.15);color:var(--red)}
+.badge-running{background:rgba(56,189,248,.15);color:var(--accent)}
+.badge-stopped{background:rgba(251,191,36,.15);color:var(--yellow)}
+.badge-pending{background:rgba(148,163,184,.15);color:var(--dim)}
+.mono{font-family:'SF Mono',Monaco,monospace;font-size:12px}
+.form-row{display:flex;gap:12px}
+.form-row>*{flex:1}
+#account-form-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);z-index:100;align-items:center;justify-content:center}
+#account-form-modal.show{display:flex}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;width:560px;max-height:80vh;overflow-y:auto}
+.modal h2{font-size:16px;margin-bottom:16px}
+.empty{text-align:center;color:var(--dim);padding:40px 0;font-size:14px}
+.env-banner{background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.25);border-radius:8px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:12px}
+.env-banner .icon{font-size:20px}
+.env-banner .info{flex:1;font-size:13px}
+.env-banner .info strong{color:var(--accent)}
+.product-tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:500;background:rgba(167,139,250,.15);color:var(--purple)}
+.custom-product{display:none;margin-top:4px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="dot"></div>
+  <h1>GLM Sniper</h1>
+  <span style="color:var(--dim);font-size:13px;margin-left:auto" id="ws-status">WebSocket: connecting...</span>
+</div>
+
+<div class="tabs">
+  <div class="tab active" data-tab="accounts">账号管理</div>
+  <div class="tab" data-tab="rush">抢购面板</div>
+  <div class="tab" data-tab="history">历史记录</div>
+</div>
+
+<div class="content">
+
+  <!-- Tab 1: Accounts -->
+  <div class="panel active" id="panel-accounts">
+    <div id="env-banner" class="env-banner" style="display:none">
+      <div class="icon">📄</div>
+      <div class="info">检测到 <strong>.env</strong> 配置：<span id="env-product-info">-</span></div>
+      <button class="btn btn-primary btn-sm" onclick="importEnv()">一键导入</button>
+    </div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h3 style="margin:0">账号列表</h3>
+        <button class="btn btn-primary btn-sm" onclick="openAccountForm()">+ 添加账号</button>
+      </div>
+    </div>
+    <div class="card">
+      <table>
+        <thead><tr><th>ID</th><th>名称</th><th>套餐</th><th>抢购时间</th><th>并发</th><th>状态</th><th>操作</th></tr></thead>
+        <tbody id="accounts-tbody"></tbody>
+      </table>
+      <div class="empty" id="accounts-empty" style="display:none">暂无账号，点击上方添加或从 .env 导入</div>
+    </div>
+  </div>
+
+  <!-- Tab 2: Rush Panel -->
+  <div class="panel" id="panel-rush">
+    <div class="row">
+      <div class="col">
+        <div class="card">
+          <h3>控制台</h3>
+          <label>选择账号</label>
+          <select id="rush-account">
+            <option value="">-- 请先添加账号 --</option>
+          </select>
+          <div class="actions">
+            <button class="btn btn-success" onclick="startRush()">开始抢购</button>
+            <button class="btn btn-danger" onclick="stopRush()">停止</button>
+          </div>
+        </div>
+        <div class="card">
+          <h3>实时统计</h3>
+          <div class="stat-grid" id="live-stats">
+            <div class="stat-item"><div class="value" id="s-total">0</div><div class="label">总请求</div></div>
+            <div class="stat-item"><div class="value" id="s-success" style="color:var(--green)">0</div><div class="label">成功</div></div>
+            <div class="stat-item"><div class="value" id="s-error" style="color:var(--red)">0</div><div class="label">错误</div></div>
+            <div class="stat-item"><div class="value" id="s-rate">0</div><div class="label">req/s</div></div>
+            <div class="stat-item"><div class="value" id="s-elapsed">0s</div><div class="label">耗时</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card" style="height:100%">
+          <h3>实时日志</h3>
+          <div class="log-area" id="log-area"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab 3: History -->
+  <div class="panel" id="panel-history">
+    <div class="card">
+      <h3>抢购记录</h3>
+      <table>
+        <thead><tr><th>Session ID</th><th>账号</th><th>套餐</th><th>状态</th><th>请求数</th><th>成功</th><th>耗时</th><th>bizId</th><th>开始时间</th></tr></thead>
+        <tbody id="history-tbody"></tbody>
+      </table>
+      <div class="empty" id="history-empty" style="display:none">暂无记录</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Account Form Modal -->
+<div id="account-form-modal">
+  <div class="modal">
+    <h2 id="form-title">添加账号</h2>
+    <input type="hidden" id="f-id">
+    <label>名称</label><input id="f-name" placeholder="备注名称">
+    <label>Authorization *</label><textarea id="f-auth" rows="3" placeholder="JWT Token"></textarea>
+    <label>目标套餐</label>
+    <select id="f-product-select" onchange="onProductSelect()">
+      <option value="">加载中...</option>
+    </select>
+    <div class="custom-product" id="custom-product-wrap">
+      <label>自定义 Product ID</label><input id="f-product-custom" placeholder="product-xxxxxx">
+    </div>
+    <input type="hidden" id="f-product" value="product-1df3e1">
+    <label>邀请码</label><input id="f-invitation" placeholder="可选">
+    <label>Cookie String</label><textarea id="f-cookie" rows="2" placeholder="可选"></textarea>
+    <div class="form-row">
+      <div><label>极速并发</label><input id="f-turbo" type="number" value="10"></div>
+      <div><label>普通并发</label><input id="f-normal" type="number" value="5"></div>
+      <div><label>极速时长(s)</label><input id="f-duration" type="number" value="5" step="0.5"></div>
+    </div>
+    <div class="form-row">
+      <div><label>最大重试</label><input id="f-retry" type="number" value="2000"></div>
+      <div><label>抢购时间</label><input id="f-time" value="10:00:00"></div>
+      <div><label>请求超时(s)</label><input id="f-timeout" type="number" value="10"></div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-primary" onclick="saveAccount()">保存</button>
+      <button class="btn" style="background:var(--border)" onclick="closeAccountForm()">取消</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+
+let ws = null;
+let currentSessionId = null;
+let productMap = {};
+
+// ─── Tabs ───
+$$('.tab').forEach(tab => {
+  tab.onclick = () => {
+    $$('.tab').forEach(t => t.classList.remove('active'));
+    $$('.panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    $(`#panel-${tab.dataset.tab}`).classList.add('active');
+    if (tab.dataset.tab === 'history') loadHistory();
+    if (tab.dataset.tab === 'rush') loadAccountSelect();
+  };
+});
+
+// ─── WebSocket ───
+function connectWS() {
+  const proto = location.protocol === 'https:' ? 'wss' : 'ws';
+  ws = new WebSocket(`${proto}://${location.host}/ws`);
+  ws.onopen = () => { $('#ws-status').textContent = 'WebSocket: connected'; $('#ws-status').style.color = 'var(--green)'; };
+  ws.onclose = () => { $('#ws-status').textContent = 'WebSocket: disconnected'; $('#ws-status').style.color = 'var(--red)'; setTimeout(connectWS, 3000); };
+  ws.onmessage = e => {
+    const ev = JSON.parse(e.data);
+    handleEvent(ev);
+  };
+}
+connectWS();
+
+function handleEvent(ev) {
+  const logArea = $('#log-area');
+  const line = document.createElement('div');
+  line.className = 'log-line';
+
+  const ts = new Date(ev.timestamp * 1000).toLocaleTimeString('zh-CN');
+
+  switch(ev.type) {
+    case 'rush_start':
+      line.classList.add('info');
+      line.textContent = `[${ts}] 🚀 抢购开始`;
+      break;
+    case 'countdown':
+      line.classList.add('info');
+      line.textContent = `[${ts}] ⏳ 倒计时 ${ev.remaining_s}s`;
+      break;
+    case 'batch_result':
+      updateLiveStats(ev.stats);
+      if (ev.attempt % (ev.batch_size * 5) === 0 || ev.reasons[0] !== '售罄') {
+        line.classList.add('info');
+        const mode = ev.is_turbo ? '极速' : '普通';
+        line.textContent = `[${ts}] #${ev.attempt} [${mode}] ${ev.reasons[0]}`;
+      }
+      break;
+    case 'rush_success':
+      line.classList.add('success');
+      line.textContent = `[${ts}] 🎉 抢购成功! bizId=${ev.biz_id}`;
+      updateLiveStats(ev.stats);
+      break;
+    case 'auth_expired':
+      line.classList.add('error');
+      line.textContent = `[${ts}] ❌ 会话过期，请更新 Token`;
+      break;
+    case 'captcha_required':
+      line.classList.add('error');
+      line.textContent = `[${ts}] ❌ 需要安全验证`;
+      break;
+    case 'throttled':
+      line.classList.add('warn');
+      line.textContent = `[${ts}] ⚠️ 限流，退避 ${ev.backoff_ms}ms`;
+      break;
+    case 'network_error':
+      line.classList.add('warn');
+      line.textContent = `[${ts}] ⚠️ 网络异常`;
+      break;
+    case 'rush_end':
+      line.classList.add('info');
+      line.textContent = `[${ts}] 抢购结束 (${ev.reason})`;
+      break;
+    case 'error':
+      line.classList.add('error');
+      line.textContent = `[${ts}] 错误: ${ev.message}`;
+      break;
+    default:
+      line.classList.add('info');
+      line.textContent = `[${ts}] ${ev.type}`;
+  }
+
+  if (line.textContent) {
+    logArea.appendChild(line);
+    if (logArea.children.length > 500) logArea.removeChild(logArea.firstChild);
+    logArea.scrollTop = logArea.scrollHeight;
+  }
+}
+
+function updateLiveStats(stats) {
+  if (!stats) return;
+  $('#s-total').textContent = stats.total || 0;
+  $('#s-success').textContent = stats.successes || 0;
+  $('#s-error').textContent = stats.errors || 0;
+  $('#s-rate').textContent = (stats.rate || 0).toFixed(0);
+  const sec = ((stats.elapsed_ms || 0) / 1000).toFixed(1);
+  $('#s-elapsed').textContent = sec + 's';
+}
+
+// ─── Products ───
+async function loadProducts() {
+  const resp = await fetch('/api/products');
+  const products = await resp.json();
+  productMap = {};
+  products.forEach(p => { if (p.id !== '_custom') productMap[p.id] = p.name; });
+  const sel = $('#f-product-select');
+  sel.innerHTML = '';
+  products.forEach(p => {
+    sel.innerHTML += `<option value="${p.id}">${p.name}</option>`;
+  });
+}
+
+function onProductSelect() {
+  const val = $('#f-product-select').value;
+  const customWrap = $('#custom-product-wrap');
+  if (val === '_custom') {
+    customWrap.style.display = 'block';
+    $('#f-product').value = '';
+  } else {
+    customWrap.style.display = 'none';
+    $('#f-product').value = val;
+  }
+}
+
+function getProductName(pid) {
+  return productMap[pid] || pid;
+}
+
+function productTag(pid) {
+  const name = getProductName(pid);
+  if (name === pid) return `<span class="mono">${pid}</span>`;
+  return `<span class="product-tag">${name}</span>`;
+}
+
+// ─── .env Import ───
+async function checkEnv() {
+  try {
+    const resp = await fetch('/api/env/check');
+    const data = await resp.json();
+    if (data.available) {
+      $('#env-banner').style.display = 'flex';
+      $('#env-product-info').textContent = `${data.product_name} (${data.product_id})`;
+    }
+  } catch(e) {}
+}
+
+async function importEnv() {
+  const resp = await fetch('/api/env/import', { method: 'POST' });
+  const data = await resp.json();
+  if (data.ok) {
+    loadAccounts();
+    addLog('info', '已从 .env 导入账号');
+  } else if (data.info) {
+    alert(data.info);
+  } else {
+    alert('导入失败: ' + (data.error || '未知错误'));
+  }
+}
+
+// ─── Accounts ───
+async function loadAccounts() {
+  const resp = await fetch('/api/accounts');
+  const accounts = await resp.json();
+  const tbody = $('#accounts-tbody');
+  const empty = $('#accounts-empty');
+  tbody.innerHTML = '';
+  if (!accounts.length) { empty.style.display = ''; return; }
+  empty.style.display = 'none';
+  accounts.forEach(a => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="mono">${a.id}</td>
+      <td>${a.name || '-'}</td>
+      <td>${productTag(a.product_id)}</td>
+      <td>${a.rush_time}</td>
+      <td>${a.turbo_concurrency}/${a.normal_concurrency}</td>
+      <td>${a.is_active ? '<span class="badge badge-success">启用</span>' : '<span class="badge badge-failed">禁用</span>'}</td>
+      <td>
+        <button class="btn btn-sm" style="background:var(--border)" onclick='editAccount(${JSON.stringify(a)})'>编辑</button>
+        <button class="btn btn-danger btn-sm" onclick="delAccount('${a.id}')">删除</button>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function openAccountForm(account) {
+  $('#account-form-modal').classList.add('show');
+  if (account) {
+    $('#form-title').textContent = '编辑账号';
+    $('#f-id').value = account.id;
+    $('#f-name').value = account.name || '';
+    $('#f-auth').value = account.authorization || '';
+    $('#f-product').value = account.product_id || '';
+    if (productMap[account.product_id]) {
+      $('#f-product-select').value = account.product_id;
+      $('#custom-product-wrap').style.display = 'none';
+    } else {
+      $('#f-product-select').value = '_custom';
+      $('#custom-product-wrap').style.display = 'block';
+      $('#f-product-custom').value = account.product_id || '';
+    }
+    $('#f-invitation').value = account.invitation_code || '';
+    $('#f-cookie').value = account.cookie_string || '';
+    $('#f-turbo').value = account.turbo_concurrency || 10;
+    $('#f-normal').value = account.normal_concurrency || 5;
+    $('#f-duration').value = account.turbo_duration || 5;
+    $('#f-retry').value = account.max_retry || 2000;
+    $('#f-time').value = account.rush_time || '10:00:00';
+    $('#f-timeout').value = account.request_timeout || 10;
+  } else {
+    $('#form-title').textContent = '添加账号';
+    $('#f-id').value = '';
+    $('#f-name').value = '';
+    $('#f-auth').value = '';
+    $('#f-product-select').value = 'product-1df3e1';
+    $('#f-product').value = 'product-1df3e1';
+    $('#custom-product-wrap').style.display = 'none';
+    $('#f-product-custom').value = '';
+    $('#f-invitation').value = '';
+    $('#f-cookie').value = '';
+    $('#f-turbo').value = 10;
+    $('#f-normal').value = 5;
+    $('#f-duration').value = 5;
+    $('#f-retry').value = 2000;
+    $('#f-time').value = '10:00:00';
+    $('#f-timeout').value = 10;
+  }
+}
+
+function closeAccountForm() { $('#account-form-modal').classList.remove('show'); }
+
+function editAccount(a) { openAccountForm(a); }
+
+async function saveAccount() {
+  const id = $('#f-id').value;
+  const selVal = $('#f-product-select').value;
+  let productId;
+  if (selVal === '_custom') {
+    productId = $('#f-product-custom').value.trim();
+    if (!productId) { alert('请输入自定义 Product ID'); return; }
+  } else {
+    productId = selVal;
+  }
+  const data = {
+    name: $('#f-name').value,
+    authorization: $('#f-auth').value,
+    product_id: productId,
+    invitation_code: $('#f-invitation').value,
+    cookie_string: $('#f-cookie').value,
+    turbo_concurrency: parseInt($('#f-turbo').value),
+    normal_concurrency: parseInt($('#f-normal').value),
+    turbo_duration: parseFloat($('#f-duration').value),
+    max_retry: parseInt($('#f-retry').value),
+    rush_time: $('#f-time').value,
+    request_timeout: parseInt($('#f-timeout').value),
+  };
+  if (!data.authorization) { alert('Authorization 不能为空'); return; }
+  if (id) {
+    await fetch(`/api/accounts/${id}`, { method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) });
+  } else {
+    await fetch('/api/accounts', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) });
+  }
+  closeAccountForm();
+  loadAccounts();
+}
+
+async function delAccount(id) {
+  if (!confirm('确定删除此账号？')) return;
+  await fetch(`/api/accounts/${id}`, { method: 'DELETE' });
+  loadAccounts();
+}
+
+// ─── Rush ───
+async function loadAccountSelect() {
+  const resp = await fetch('/api/accounts');
+  const accounts = await resp.json();
+  const sel = $('#rush-account');
+  sel.innerHTML = '<option value="">-- 选择账号 --</option>';
+  accounts.filter(a => a.is_active).forEach(a => {
+    const pname = getProductName(a.product_id);
+    sel.innerHTML += `<option value="${a.id}">${a.name || a.id} — ${pname}</option>`;
+  });
+}
+
+async function startRush() {
+  const accountId = $('#rush-account').value;
+  if (!accountId) { alert('请选择账号'); return; }
+  $('#log-area').innerHTML = '';
+  const resp = await fetch('/api/rush/start', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({account_id: accountId}) });
+  const data = await resp.json();
+  if (data.session_id) {
+    currentSessionId = data.session_id;
+    addLog('info', `抢购任务已启动, session: ${data.session_id}`);
+  } else {
+    addLog('error', `启动失败: ${data.error}`);
+  }
+}
+
+async function stopRush() {
+  if (!currentSessionId) { alert('没有运行中的任务'); return; }
+  await fetch('/api/rush/stop', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({session_id: currentSessionId}) });
+  addLog('warn', '正在停止...');
+}
+
+function addLog(cls, text) {
+  const logArea = $('#log-area');
+  const line = document.createElement('div');
+  line.className = `log-line ${cls}`;
+  line.textContent = `[${new Date().toLocaleTimeString('zh-CN')}] ${text}`;
+  logArea.appendChild(line);
+  logArea.scrollTop = logArea.scrollHeight;
+}
+
+// ─── History ───
+async function loadHistory() {
+  const [sessionsResp, accountsResp] = await Promise.all([
+    fetch('/api/sessions?limit=50'),
+    fetch('/api/accounts'),
+  ]);
+  const sessions = await sessionsResp.json();
+  const accounts = await accountsResp.json();
+  const accountMap = {};
+  accounts.forEach(a => { accountMap[a.id] = a; });
+
+  const tbody = $('#history-tbody');
+  const empty = $('#history-empty');
+  tbody.innerHTML = '';
+  if (!sessions.length) { empty.style.display = ''; return; }
+  empty.style.display = 'none';
+  sessions.forEach(s => {
+    const badgeCls = {success:'badge-success',failed:'badge-failed',running:'badge-running',stopped:'badge-stopped',pending:'badge-pending'}[s.status] || 'badge-pending';
+    const acc = accountMap[s.account_id];
+    const pname = acc ? getProductName(acc.product_id) : s.account_id;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="mono">${s.id}</td>
+      <td>${acc ? (acc.name || acc.id) : s.account_id}</td>
+      <td>${productTag(acc ? acc.product_id : '')}</td>
+      <td><span class="badge ${badgeCls}">${s.status}</span></td>
+      <td>${s.total_attempts}</td>
+      <td>${s.success_count}</td>
+      <td>${(s.elapsed_ms/1000).toFixed(1)}s</td>
+      <td class="mono">${s.result_biz_id || '-'}</td>
+      <td>${s.started_at ? new Date(s.started_at).toLocaleString('zh-CN') : '-'}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+// ─── Init ───
+loadProducts();
+loadAccounts();
+checkEnv();
+</script>
+</body>
+</html>

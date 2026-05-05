@@ -26,9 +26,9 @@
     "%SystemRoot%\System32\chcp.com" 65001 > nul
 )
 
-@for %%i in ("/Users/jinghao/code/agents/glm-dingyu/.venv") do @set "VIRTUAL_ENV=%%~fi"
+@for %%i in ("/Users/bytedance/github/glm-sniper/.venv") do @set "VIRTUAL_ENV=%%~fi"
 
-@set "VIRTUAL_ENV_PROMPT=glm-dingyu"
+@set "VIRTUAL_ENV_PROMPT=glm-sniper"
 @if NOT DEFINED VIRTUAL_ENV_PROMPT (
     @for %%d in ("%VIRTUAL_ENV%") do @set "VIRTUAL_ENV_PROMPT=%%~nxd"
 )

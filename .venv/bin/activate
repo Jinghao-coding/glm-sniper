@@ -78,7 +78,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV='/Users/jinghao/code/agents/glm-dingyu/.venv'
+VIRTUAL_ENV='/Users/bytedance/github/glm-sniper/.venv'
 if ([ "$OSTYPE" = "cygwin" ] || [ "$OSTYPE" = "msys" ]) && $(command -v cygpath &> /dev/null) ; then
     VIRTUAL_ENV=$(cygpath -u "$VIRTUAL_ENV")
 fi
@@ -98,8 +98,8 @@ _OLD_VIRTUAL_PATH="$PATH"
 PATH="$VIRTUAL_ENV/bin:$PATH"
 export PATH
 
-if [ "xglm-dingyu" != x ] ; then
-    VIRTUAL_ENV_PROMPT="glm-dingyu"
+if [ "xglm-sniper" != x ] ; then
+    VIRTUAL_ENV_PROMPT="glm-sniper"
 else
     VIRTUAL_ENV_PROMPT=$(basename "$VIRTUAL_ENV")
 fi
