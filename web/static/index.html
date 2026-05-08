@@ -5,191 +5,842 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GLM Sniper</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#0f172a;--card:#1e293b;--border:#334155;--text:#e2e8f0;--dim:#94a3b8;--accent:#38bdf8;--green:#4ade80;--red:#f87171;--yellow:#fbbf24;--purple:#a78bfa}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
-.header{background:var(--card);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;gap:12px}
-.header h1{font-size:18px;font-weight:600}
-.header .dot{width:8px;height:8px;border-radius:50%;background:var(--green)}
-.tabs{display:flex;gap:0;background:var(--card);border-bottom:1px solid var(--border);padding:0 24px}
-.tab{padding:10px 20px;cursor:pointer;color:var(--dim);border-bottom:2px solid transparent;font-size:14px;transition:all .2s}
-.tab:hover{color:var(--text)}
-.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
-.content{padding:24px;max-width:1200px;margin:0 auto}
-.panel{display:none}
-.panel.active{display:block}
-.card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:16px}
-.card h3{font-size:14px;color:var(--dim);margin-bottom:12px;text-transform:uppercase;letter-spacing:.5px}
-.row{display:flex;gap:16px;flex-wrap:wrap}
-.col{flex:1;min-width:280px}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th{text-align:left;padding:8px 12px;color:var(--dim);border-bottom:1px solid var(--border);font-weight:500}
-td{padding:8px 12px;border-bottom:1px solid var(--border)}
-tr:hover td{background:rgba(56,189,248,.05)}
-input,select,textarea{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text);font-size:13px;width:100%;outline:none;transition:border-color .2s}
-input:focus,select:focus,textarea:focus{border-color:var(--accent)}
-label{display:block;font-size:12px;color:var(--dim);margin-bottom:4px;margin-top:8px}
-.btn{padding:8px 16px;border:none;border-radius:6px;cursor:pointer;font-size:13px;font-weight:500;transition:all .2s}
-.btn-primary{background:var(--accent);color:#000}
-.btn-primary:hover{opacity:.85}
-.btn-danger{background:var(--red);color:#fff}
-.btn-danger:hover{opacity:.85}
-.btn-success{background:var(--green);color:#000}
-.btn-success:hover{opacity:.85}
-.btn-sm{padding:4px 10px;font-size:12px}
-.actions{display:flex;gap:8px;margin-top:12px}
-.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:16px}
-.stat-item{background:var(--bg);border-radius:6px;padding:12px;text-align:center}
-.stat-item .value{font-size:24px;font-weight:700;color:var(--accent)}
-.stat-item .label{font-size:11px;color:var(--dim);margin-top:4px}
-.log-area{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:12px;height:300px;overflow-y:auto;font-family:'SF Mono',Monaco,monospace;font-size:12px;line-height:1.6}
-.log-line{padding:1px 0}
-.log-line.success{color:var(--green)}
-.log-line.error{color:var(--red)}
-.log-line.warn{color:var(--yellow)}
-.log-line.info{color:var(--dim)}
-.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:500}
-.badge-success{background:rgba(74,222,128,.15);color:var(--green)}
-.badge-failed{background:rgba(248,113,113,.15);color:var(--red)}
-.badge-running{background:rgba(56,189,248,.15);color:var(--accent)}
-.badge-stopped{background:rgba(251,191,36,.15);color:var(--yellow)}
-.badge-pending{background:rgba(148,163,184,.15);color:var(--dim)}
-.mono{font-family:'SF Mono',Monaco,monospace;font-size:12px}
-.form-row{display:flex;gap:12px}
-.form-row>*{flex:1}
-#account-form-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);z-index:100;align-items:center;justify-content:center}
-#account-form-modal.show{display:flex}
-.modal{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;width:560px;max-height:80vh;overflow-y:auto}
-.modal h2{font-size:16px;margin-bottom:16px}
-.empty{text-align:center;color:var(--dim);padding:40px 0;font-size:14px}
-.env-banner{background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.25);border-radius:8px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:12px}
-.env-banner .icon{font-size:20px}
-.env-banner .info{flex:1;font-size:13px}
-.env-banner .info strong{color:var(--accent)}
-.product-tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:500;background:rgba(167,139,250,.15);color:var(--purple)}
-.custom-product{display:none;margin-top:4px}
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --bg:#07111f;
+    --bg-soft:#0d1b2d;
+    --panel:rgba(12,24,42,.84);
+    --panel-strong:rgba(15,30,52,.94);
+    --card:rgba(17,34,58,.82);
+    --card-hover:rgba(21,42,71,.94);
+    --border:rgba(148,163,184,.16);
+    --border-strong:rgba(96,165,250,.22);
+    --text:#edf4ff;
+    --muted:#94a3b8;
+    --muted-strong:#c3d3e7;
+    --accent:#47c5ff;
+    --accent-strong:#2ee6c4;
+    --accent-purple:#9b8cff;
+    --success:#4ade80;
+    --danger:#fb7185;
+    --warning:#fbbf24;
+    --shadow:0 24px 80px rgba(2,6,23,.45);
+    --radius:22px;
+    --radius-sm:14px;
+    --font-display:"SF Pro Display","Segoe UI",system-ui,sans-serif;
+    --font-body:"SF Pro Text","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    --font-mono:"SF Mono","JetBrains Mono","Fira Code",monospace;
+  }
+
+  body{
+    font-family:var(--font-body);
+    color:var(--text);
+    min-height:100vh;
+    background:
+      radial-gradient(circle at top left, rgba(71,197,255,.22), transparent 34%),
+      radial-gradient(circle at top right, rgba(155,140,255,.18), transparent 28%),
+      radial-gradient(circle at bottom center, rgba(46,230,196,.08), transparent 26%),
+      linear-gradient(180deg, #07111f 0%, #081427 42%, #07111d 100%);
+    overflow-x:hidden;
+  }
+
+  body::before,
+  body::after{
+    content:"";
+    position:fixed;
+    inset:auto;
+    pointer-events:none;
+    z-index:0;
+    filter:blur(80px);
+    opacity:.7;
+  }
+
+  body::before{
+    top:-140px;
+    right:-80px;
+    width:320px;
+    height:320px;
+    background:rgba(71,197,255,.18);
+  }
+
+  body::after{
+    bottom:-120px;
+    left:-40px;
+    width:300px;
+    height:300px;
+    background:rgba(155,140,255,.16);
+  }
+
+  .app-shell{
+    position:relative;
+    z-index:1;
+    width:min(1440px, calc(100% - 32px));
+    margin:20px auto 28px;
+  }
+
+  .topbar{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:20px;
+    margin-bottom:18px;
+    padding:22px 24px;
+    border:1px solid var(--border);
+    border-radius:calc(var(--radius) + 4px);
+    background:linear-gradient(135deg, rgba(11,22,39,.88), rgba(15,28,48,.74));
+    backdrop-filter:blur(18px);
+    box-shadow:var(--shadow);
+  }
+
+  .brand{
+    display:flex;
+    gap:16px;
+    align-items:flex-start;
+  }
+
+  .brand-mark{
+    width:44px;
+    height:44px;
+    border-radius:16px;
+    display:grid;
+    place-items:center;
+    font-weight:800;
+    letter-spacing:.08em;
+    color:#06121d;
+    background:linear-gradient(135deg, var(--accent), var(--accent-strong));
+    box-shadow:0 12px 28px rgba(71,197,255,.28);
+  }
+
+  .brand-copy h1{
+    font-family:var(--font-display);
+    font-size:26px;
+    line-height:1.1;
+    letter-spacing:.02em;
+    margin-bottom:6px;
+  }
+
+  .brand-copy p{
+    max-width:720px;
+    color:var(--muted);
+    font-size:14px;
+    line-height:1.65;
+  }
+
+  .status-cluster{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    min-width:250px;
+    align-items:flex-end;
+  }
+
+  .status-pill{
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    padding:10px 14px;
+    border-radius:999px;
+    border:1px solid var(--border);
+    background:rgba(7,17,31,.48);
+    color:var(--muted-strong);
+    font-size:13px;
+    white-space:nowrap;
+  }
+
+  .status-pill .dot{
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    background:var(--warning);
+    box-shadow:0 0 0 6px rgba(251,191,36,.12);
+  }
+
+  .status-pill.connected .dot{background:var(--success);box-shadow:0 0 0 6px rgba(74,222,128,.12)}
+  .status-pill.disconnected .dot{background:var(--danger);box-shadow:0 0 0 6px rgba(251,113,133,.12)}
+
+  .status-note{
+    color:var(--muted);
+    font-size:12px;
+    line-height:1.6;
+    text-align:right;
+    max-width:280px;
+  }
+
+  .overview{
+    display:grid;
+    grid-template-columns:1.7fr 1fr;
+    gap:18px;
+    margin-bottom:18px;
+  }
+
+  .hero,
+  .summary-grid,
+  .surface,
+  .modal{
+    border:1px solid var(--border);
+    background:var(--panel);
+    backdrop-filter:blur(16px);
+    box-shadow:var(--shadow);
+  }
+
+  .hero{
+    position:relative;
+    overflow:hidden;
+    border-radius:var(--radius);
+    padding:24px;
+    min-height:220px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    gap:20px;
+  }
+
+  .hero::before{
+    content:"";
+    position:absolute;
+    inset:auto -60px -80px auto;
+    width:260px;
+    height:260px;
+    background:radial-gradient(circle, rgba(71,197,255,.2), transparent 66%);
+    pointer-events:none;
+  }
+
+  .eyebrow{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:7px 12px;
+    width:max-content;
+    border-radius:999px;
+    border:1px solid rgba(71,197,255,.18);
+    background:rgba(71,197,255,.08);
+    font-size:12px;
+    color:var(--accent);
+    text-transform:uppercase;
+    letter-spacing:.14em;
+  }
+
+  .hero-copy h2{
+    font-family:var(--font-display);
+    font-size:32px;
+    line-height:1.15;
+    margin:14px 0 12px;
+    max-width:720px;
+  }
+
+  .hero-copy p{
+    font-size:14px;
+    line-height:1.7;
+    color:var(--muted-strong);
+    max-width:760px;
+  }
+
+  .hero-highlights{
+    display:flex;
+    flex-wrap:wrap;
+    gap:12px;
+  }
+
+  .hero-chip{
+    padding:10px 12px;
+    border-radius:16px;
+    border:1px solid rgba(148,163,184,.12);
+    background:rgba(7,17,31,.46);
+    min-width:160px;
+  }
+
+  .hero-chip strong{display:block;font-size:14px;margin-bottom:4px}
+  .hero-chip span{font-size:12px;color:var(--muted)}
+
+  .summary-grid{
+    border-radius:var(--radius);
+    padding:16px;
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0,1fr));
+    gap:12px;
+  }
+
+  .summary-card{
+    border-radius:18px;
+    padding:18px;
+    background:linear-gradient(180deg, rgba(18,36,61,.8), rgba(10,21,38,.82));
+    border:1px solid rgba(148,163,184,.11);
+    min-height:120px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    gap:10px;
+  }
+
+  .summary-card .label{font-size:12px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+  .summary-card .value{font-size:30px;font-weight:800;font-family:var(--font-display)}
+  .summary-card .meta{font-size:12px;color:var(--muted-strong);line-height:1.5}
+  .summary-card.accent .value{color:var(--accent)}
+  .summary-card.success .value{color:var(--success)}
+  .summary-card.purple .value{color:var(--accent-purple)}
+
+  .tabs{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    padding:8px;
+    margin-bottom:18px;
+    border-radius:20px;
+    border:1px solid var(--border);
+    background:rgba(8,18,32,.72);
+    backdrop-filter:blur(12px);
+  }
+
+  .tab{
+    position:relative;
+    padding:12px 16px;
+    border-radius:14px;
+    color:var(--muted);
+    cursor:pointer;
+    transition:all .22s ease;
+    font-size:14px;
+    font-weight:600;
+    letter-spacing:.01em;
+  }
+
+  .tab:hover{color:var(--text);background:rgba(148,163,184,.07)}
+
+  .tab.active{
+    color:#05111a;
+    background:linear-gradient(135deg, var(--accent), var(--accent-strong));
+    box-shadow:0 10px 26px rgba(71,197,255,.25);
+  }
+
+  .panel{display:none}
+  .panel.active{display:block}
+
+  .panel-stack{display:grid;gap:16px}
+  .surface{
+    border-radius:var(--radius);
+    padding:20px;
+    overflow:hidden;
+  }
+
+  .surface-head{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:16px;
+    margin-bottom:18px;
+  }
+
+  .surface-head h3{
+    font-size:18px;
+    font-family:var(--font-display);
+    margin-bottom:4px;
+  }
+
+  .surface-head p{
+    color:var(--muted);
+    font-size:13px;
+    line-height:1.6;
+  }
+
+  .row{display:grid;grid-template-columns:minmax(0,1fr) minmax(380px, 1fr);gap:16px}
+  .col{display:grid;gap:16px;align-content:start}
+
+  .mini-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+    gap:12px;
+  }
+
+  .mini-stat{
+    padding:16px;
+    border-radius:18px;
+    border:1px solid rgba(148,163,184,.11);
+    background:rgba(8,18,32,.6);
+  }
+
+  .mini-stat .value{font-size:24px;font-weight:800;font-family:var(--font-display)}
+  .mini-stat .label{font-size:11px;color:var(--muted);margin-top:6px;text-transform:uppercase;letter-spacing:.08em}
+  .mini-stat.success .value{color:var(--success)}
+  .mini-stat.error .value{color:var(--danger)}
+  .mini-stat.accent .value{color:var(--accent)}
+
+  .table-shell{
+    border:1px solid rgba(148,163,184,.11);
+    border-radius:20px;
+    overflow:auto;
+    background:rgba(8,18,32,.55);
+  }
+
+  table{width:100%;min-width:860px;border-collapse:collapse;font-size:13px}
+  thead{background:rgba(255,255,255,.02)}
+  th{
+    text-align:left;
+    padding:14px 16px;
+    color:var(--muted);
+    border-bottom:1px solid rgba(148,163,184,.14);
+    font-weight:600;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    font-size:11px;
+  }
+
+  td{
+    padding:14px 16px;
+    border-bottom:1px solid rgba(148,163,184,.08);
+    vertical-align:top;
+  }
+
+  tbody tr{transition:background .18s ease}
+  tbody tr:hover{background:rgba(71,197,255,.045)}
+
+  input,select,textarea{
+    width:100%;
+    background:rgba(6,14,26,.76);
+    border:1px solid rgba(148,163,184,.16);
+    border-radius:14px;
+    padding:12px 14px;
+    color:var(--text);
+    font-size:13px;
+    outline:none;
+    transition:border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+  }
+
+  input::placeholder,textarea::placeholder{color:#6b85a7}
+  input:focus,select:focus,textarea:focus{
+    border-color:rgba(71,197,255,.52);
+    box-shadow:0 0 0 4px rgba(71,197,255,.12);
+    transform:translateY(-1px);
+  }
+
+  label{
+    display:block;
+    font-size:12px;
+    color:var(--muted);
+    margin-bottom:6px;
+    margin-top:12px;
+    letter-spacing:.04em;
+  }
+
+  .field-hint{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5}
+
+  .btn{
+    appearance:none;
+    border:none;
+    border-radius:14px;
+    cursor:pointer;
+    font-size:13px;
+    font-weight:700;
+    padding:11px 16px;
+    transition:transform .18s ease, box-shadow .18s ease, opacity .18s ease;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+  }
+
+  .btn:hover{transform:translateY(-1px)}
+  .btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
+  .btn-primary{background:linear-gradient(135deg, var(--accent), var(--accent-strong));color:#04111b;box-shadow:0 14px 30px rgba(71,197,255,.22)}
+  .btn-success{background:linear-gradient(135deg, #34d399, #6ee7b7);color:#072418}
+  .btn-danger{background:linear-gradient(135deg, #fb7185, #f97316);color:#fff}
+  .btn-secondary{background:rgba(148,163,184,.12);color:var(--text);border:1px solid rgba(148,163,184,.14)}
+  .btn-ghost{background:transparent;color:var(--muted-strong);border:1px solid rgba(148,163,184,.12)}
+  .btn-sm{padding:8px 12px;font-size:12px;border-radius:12px}
+  .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+
+  .log-area{
+    min-height:420px;
+    max-height:620px;
+    overflow:auto;
+    border-radius:20px;
+    border:1px solid rgba(148,163,184,.11);
+    background:linear-gradient(180deg, rgba(5,12,23,.9), rgba(8,18,32,.84));
+    padding:16px;
+    font-family:var(--font-mono);
+    font-size:12px;
+    line-height:1.65;
+  }
+
+  .log-line{padding:4px 0;color:var(--muted-strong)}
+  .log-line.success{color:var(--success)}
+  .log-line.error{color:var(--danger)}
+  .log-line.warn{color:var(--warning)}
+  .log-line.info{color:#c7d8ef}
+
+  .badge,
+  .product-tag,
+  .chip{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding:5px 10px;
+    border-radius:999px;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.02em;
+    white-space:nowrap;
+  }
+
+  .badge-success{background:rgba(74,222,128,.16);color:var(--success)}
+  .badge-failed{background:rgba(251,113,133,.16);color:var(--danger)}
+  .badge-running{background:rgba(71,197,255,.16);color:var(--accent)}
+  .badge-stopped{background:rgba(251,191,36,.15);color:var(--warning)}
+  .badge-pending{background:rgba(148,163,184,.14);color:var(--muted)}
+  .product-tag{background:rgba(155,140,255,.16);color:#d7ccff}
+  .mono{font-family:var(--font-mono);font-size:12px}
+
+  .env-banner{
+    display:none;
+    align-items:center;
+    gap:14px;
+    padding:16px 18px;
+    border-radius:18px;
+    border:1px solid rgba(71,197,255,.2);
+    background:linear-gradient(135deg, rgba(71,197,255,.12), rgba(46,230,196,.08));
+  }
+
+  .env-banner .icon{
+    width:40px;height:40px;border-radius:14px;display:grid;place-items:center;
+    background:rgba(255,255,255,.08);font-size:20px;flex:0 0 auto;
+  }
+
+  .env-banner .info{flex:1;font-size:13px;color:var(--muted-strong);line-height:1.6}
+  .env-banner .info strong{color:var(--accent)}
+
+  .empty{
+    text-align:center;
+    color:var(--muted);
+    padding:44px 20px;
+    font-size:14px;
+    line-height:1.8;
+  }
+
+  .helper-grid{display:grid;grid-template-columns:repeat(2, minmax(0,1fr));gap:16px}
+
+  #account-form-modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    z-index:120;
+    padding:20px;
+    background:rgba(2,6,23,.7);
+    backdrop-filter:blur(8px);
+    align-items:center;
+    justify-content:center;
+  }
+
+  #account-form-modal.show{display:flex}
+
+  .modal{
+    width:min(920px, 100%);
+    max-height:min(88vh, 980px);
+    overflow:auto;
+    border-radius:28px;
+    padding:24px;
+    background:linear-gradient(180deg, rgba(12,24,42,.97), rgba(10,19,34,.96));
+  }
+
+  .modal-head{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:16px;
+    margin-bottom:16px;
+  }
+
+  .modal-head h2{font-size:24px;font-family:var(--font-display);margin-bottom:6px}
+  .modal-head p{font-size:13px;line-height:1.7;color:var(--muted)}
+
+  .form-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:18px}
+  .form-card{padding:18px;border-radius:22px;background:rgba(7,17,31,.52);border:1px solid rgba(148,163,184,.11)}
+  .form-card h4{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:12px}
+  .form-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+  .custom-product{display:none;margin-top:8px}
+
+  .toast-stack{
+    position:fixed;
+    right:18px;
+    bottom:18px;
+    z-index:150;
+    display:grid;
+    gap:10px;
+    width:min(360px, calc(100vw - 36px));
+  }
+
+  .toast{
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+    padding:14px 16px;
+    border-radius:18px;
+    border:1px solid rgba(148,163,184,.14);
+    background:rgba(10,19,34,.94);
+    box-shadow:0 14px 40px rgba(2,6,23,.38);
+  }
+
+  .toast strong{display:block;font-size:13px;margin-bottom:4px}
+  .toast p{font-size:12px;line-height:1.6;color:var(--muted-strong)}
+  .toast.info .icon{color:var(--accent)}
+  .toast.success .icon{color:var(--success)}
+  .toast.warn .icon{color:var(--warning)}
+  .toast.error .icon{color:var(--danger)}
+
+  .subtle{color:var(--muted);font-size:12px;line-height:1.6}
+
+  @media (max-width: 1180px){
+    .overview,.row,.form-grid{grid-template-columns:1fr}
+    .status-cluster{align-items:flex-start}
+    .status-note{text-align:left}
+  }
+
+  @media (max-width: 860px){
+    .app-shell{width:min(100% - 20px, 1440px);margin:12px auto 20px}
+    .topbar,.hero,.surface,.modal{padding:18px}
+    .brand{flex-direction:column}
+    .brand-copy h1{font-size:22px}
+    .hero-copy h2{font-size:24px}
+    .summary-grid,.helper-grid,.form-row{grid-template-columns:1fr}
+    .tabs{position:sticky;top:10px;z-index:5}
+    table{min-width:720px}
+  }
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div class="dot"></div>
-  <h1>GLM Sniper</h1>
-  <span style="color:var(--dim);font-size:13px;margin-left:auto" id="ws-status">WebSocket: connecting...</span>
-</div>
-
-<div class="tabs">
-  <div class="tab active" data-tab="accounts">账号管理</div>
-  <div class="tab" data-tab="rush">抢购面板</div>
-  <div class="tab" data-tab="history">历史记录</div>
-</div>
-
-<div class="content">
-
-  <!-- Tab 1: Accounts -->
-  <div class="panel active" id="panel-accounts">
-    <div id="env-banner" class="env-banner" style="display:none">
-      <div class="icon">📄</div>
-      <div class="info">检测到 <strong>.env</strong> 配置：<span id="env-product-info">-</span></div>
-      <button class="btn btn-primary btn-sm" onclick="importEnv()">一键导入</button>
-    </div>
-    <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <h3 style="margin:0">账号列表</h3>
-        <button class="btn btn-primary btn-sm" onclick="openAccountForm()">+ 添加账号</button>
+<div class="app-shell">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">GS</div>
+      <div class="brand-copy">
+        <div class="eyebrow">Local rush console</div>
+        <h1>GLM Sniper 控制台</h1>
+        <p>这是一个本地抢购工具的单页控制中心。当前版本把账号、抢购和历史全部塞进一张页面里，所以这次界面优化重点放在信息层级、反馈清晰度和操作效率，而不动你的核心抢购逻辑。</p>
       </div>
     </div>
-    <div class="card">
-      <table>
-        <thead><tr><th>ID</th><th>名称</th><th>套餐</th><th>抢购时间</th><th>并发</th><th>状态</th><th>操作</th></tr></thead>
-        <tbody id="accounts-tbody"></tbody>
-      </table>
-      <div class="empty" id="accounts-empty" style="display:none">暂无账号，点击上方添加或从 .env 导入</div>
+    <div class="status-cluster">
+      <div class="status-pill" id="ws-pill"><span class="dot"></span><span id="ws-status">WebSocket 连接中…</span></div>
+      <div class="status-note">连接状态、运行统计和历史记录会在这里统一呈现，避免你在三块区域里反复来回找状态。</div>
     </div>
-  </div>
+  </header>
 
-  <!-- Tab 2: Rush Panel -->
-  <div class="panel" id="panel-rush">
-    <div class="row">
-      <div class="col">
-        <div class="card">
-          <h3>控制台</h3>
-          <label>选择账号</label>
-          <select id="rush-account">
-            <option value="">-- 请先添加账号 --</option>
-          </select>
-          <div class="actions">
-            <button class="btn btn-success" onclick="startRush()">开始抢购</button>
-            <button class="btn btn-danger" onclick="stopRush()">停止</button>
+  <section class="overview">
+    <div class="hero">
+      <div class="hero-copy">
+        <div class="eyebrow">UI refresh / control room</div>
+        <h2>把“能用”的工具面板，整理成一个更像监控台的操作界面。</h2>
+        <p>现在的页面结构已经具备完整功能，但问题是表格、表单、日志和状态互相抢注意力。新的布局把“先看什么、再点什么、出了问题去哪看”明确拆开了。</p>
+      </div>
+      <div class="hero-highlights">
+        <div class="hero-chip"><strong>账号管理</strong><span>集中编辑配置，并显式展示可导入来源</span></div>
+        <div class="hero-chip"><strong>抢购面板</strong><span>将控制、实时统计和日志分成三层</span></div>
+        <div class="hero-chip"><strong>历史记录</strong><span>让状态和结果字段更易扫读</span></div>
+      </div>
+    </div>
+
+    <div class="summary-grid">
+      <div class="summary-card accent">
+        <div class="label">账号总数</div>
+        <div class="value" id="summary-accounts">0</div>
+        <div class="meta">已录入的抢购账号配置</div>
+      </div>
+      <div class="summary-card success">
+        <div class="label">启用账号</div>
+        <div class="value" id="summary-active">0</div>
+        <div class="meta">可直接出现在抢购选择框中的账号</div>
+      </div>
+      <div class="summary-card purple">
+        <div class="label">历史任务</div>
+        <div class="value" id="summary-sessions">0</div>
+        <div class="meta">最近读取到的抢购会话数量</div>
+      </div>
+      <div class="summary-card">
+        <div class="label">运行中</div>
+        <div class="value" id="summary-running">0</div>
+        <div class="meta">当前进程里仍然活跃的会话</div>
+      </div>
+    </div>
+  </section>
+
+  <nav class="tabs">
+    <div class="tab active" data-tab="accounts">账号管理</div>
+    <div class="tab" data-tab="rush">抢购面板</div>
+    <div class="tab" data-tab="history">历史记录</div>
+  </nav>
+
+  <main>
+    <section class="panel active" id="panel-accounts">
+      <div class="panel-stack">
+        <div id="env-banner" class="env-banner">
+          <div class="icon">📄</div>
+          <div class="info">检测到 <strong>.env</strong> 默认配置：<span id="env-product-info">-</span>。如果这份配置就是你常用账号，可以直接一键导入。</div>
+          <button class="btn btn-primary btn-sm" onclick="importEnv()">一键导入</button>
+        </div>
+
+        <section class="surface">
+          <div class="surface-head">
+            <div>
+              <h3>账号列表</h3>
+              <p>这里集中维护 Authorization、目标套餐和并发参数。高频动作保留在头部，列表本身只显示你最需要扫读的字段。</p>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="openAccountForm()">＋ 添加账号</button>
           </div>
-        </div>
-        <div class="card">
-          <h3>实时统计</h3>
-          <div class="stat-grid" id="live-stats">
-            <div class="stat-item"><div class="value" id="s-total">0</div><div class="label">总请求</div></div>
-            <div class="stat-item"><div class="value" id="s-success" style="color:var(--green)">0</div><div class="label">成功</div></div>
-            <div class="stat-item"><div class="value" id="s-error" style="color:var(--red)">0</div><div class="label">错误</div></div>
-            <div class="stat-item"><div class="value" id="s-rate">0</div><div class="label">req/s</div></div>
-            <div class="stat-item"><div class="value" id="s-elapsed">0s</div><div class="label">耗时</div></div>
+
+          <div class="table-shell">
+            <table>
+              <thead>
+                <tr><th>ID</th><th>名称</th><th>套餐</th><th>抢购时间</th><th>并发</th><th>状态</th><th>操作</th></tr>
+              </thead>
+              <tbody id="accounts-tbody"></tbody>
+            </table>
           </div>
+          <div class="empty" id="accounts-empty" style="display:none">还没有账号配置。你可以手动新建，也可以直接从 <span class="mono">.env</span> 导入。</div>
+        </section>
+      </div>
+    </section>
+
+    <section class="panel" id="panel-rush">
+      <div class="row">
+        <div class="col">
+          <section class="surface">
+            <div class="surface-head">
+              <div>
+                <h3>抢购控制台</h3>
+                <p>先选账号，再启动任务。日志和统计会自动联动更新，不需要你自己切换到其它面板找结果。</p>
+              </div>
+            </div>
+            <label>选择账号</label>
+            <select id="rush-account"></select>
+            <div class="field-hint" id="rush-account-meta">请选择一个启用账号后开始任务。</div>
+            <div class="actions">
+              <button class="btn btn-success" id="start-btn" onclick="startRush()">开始抢购</button>
+              <button class="btn btn-danger" id="stop-btn" onclick="stopRush()">停止任务</button>
+            </div>
+          </section>
+
+          <section class="surface">
+            <div class="surface-head">
+              <div>
+                <h3>实时统计</h3>
+                <p>把抢购反馈拆成稳定的指标卡，减少你在日志里人工捞关键数字。</p>
+              </div>
+            </div>
+            <div class="mini-grid">
+              <div class="mini-stat accent"><div class="value" id="s-total">0</div><div class="label">总请求</div></div>
+              <div class="mini-stat success"><div class="value" id="s-success">0</div><div class="label">成功次数</div></div>
+              <div class="mini-stat error"><div class="value" id="s-error">0</div><div class="label">错误次数</div></div>
+              <div class="mini-stat"><div class="value" id="s-rate">0</div><div class="label">req/s</div></div>
+              <div class="mini-stat"><div class="value" id="s-elapsed">0s</div><div class="label">累计耗时</div></div>
+            </div>
+          </section>
+        </div>
+
+        <div class="col">
+          <section class="surface">
+            <div class="surface-head">
+              <div>
+                <h3>实时日志</h3>
+                <p>日志区保留细节，但把状态等级用颜色拉开。成功、限流、验证码和异常都能一眼看出来。</p>
+              </div>
+            </div>
+            <div class="log-area" id="log-area"></div>
+          </section>
         </div>
       </div>
-      <div class="col">
-        <div class="card" style="height:100%">
-          <h3>实时日志</h3>
-          <div class="log-area" id="log-area"></div>
+    </section>
+
+    <section class="panel" id="panel-history">
+      <section class="surface">
+        <div class="surface-head">
+          <div>
+            <h3>抢购记录</h3>
+            <p>历史记录保留核心结果字段，让你可以快速扫到状态、套餐、成功次数和 bizId，而不是先读一整行再判断。</p>
+          </div>
+          <button class="btn btn-secondary btn-sm" onclick="loadHistory()">刷新记录</button>
         </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Tab 3: History -->
-  <div class="panel" id="panel-history">
-    <div class="card">
-      <h3>抢购记录</h3>
-      <table>
-        <thead><tr><th>Session ID</th><th>账号</th><th>套餐</th><th>状态</th><th>请求数</th><th>成功</th><th>耗时</th><th>bizId</th><th>开始时间</th></tr></thead>
-        <tbody id="history-tbody"></tbody>
-      </table>
-      <div class="empty" id="history-empty" style="display:none">暂无记录</div>
-    </div>
-  </div>
-
+        <div class="table-shell">
+          <table>
+            <thead><tr><th>Session ID</th><th>账号</th><th>套餐</th><th>状态</th><th>请求数</th><th>成功</th><th>耗时</th><th>bizId</th><th>开始时间</th></tr></thead>
+            <tbody id="history-tbody"></tbody>
+          </table>
+        </div>
+        <div class="empty" id="history-empty" style="display:none">还没有历史记录。启动一次抢购之后，这里会自动沉淀出完整会话信息。</div>
+      </section>
+    </section>
+  </main>
 </div>
 
-<!-- Account Form Modal -->
 <div id="account-form-modal">
   <div class="modal">
-    <h2 id="form-title">添加账号</h2>
+    <div class="modal-head">
+      <div>
+        <h2 id="form-title">添加账号</h2>
+        <p>表单按“认证信息 / 抢购参数”分区。这样在调 Token 时不会和并发参数混在一起，录入体验会更稳定。</p>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="closeAccountForm()">关闭</button>
+    </div>
+
     <input type="hidden" id="f-id">
-    <label>名称</label><input id="f-name" placeholder="备注名称">
-    <label>Authorization *</label><textarea id="f-auth" rows="3" placeholder="JWT Token"></textarea>
-    <label>目标套餐</label>
-    <select id="f-product-select" onchange="onProductSelect()">
-      <option value="">加载中...</option>
-    </select>
-    <div class="custom-product" id="custom-product-wrap">
-      <label>自定义 Product ID</label><input id="f-product-custom" placeholder="product-xxxxxx">
+    <div class="form-grid">
+      <div class="form-card">
+        <h4>认证与目标</h4>
+        <label>名称</label>
+        <input id="f-name" placeholder="给这个账号一个容易识别的备注名">
+
+        <label>Authorization *</label>
+        <textarea id="f-auth" rows="5" placeholder="JWT Token"></textarea>
+        <div class="field-hint">当前项目仍然以本地明文方式保存 Token，这是项目本身的问题之一；这次界面优化不改存储逻辑，但会把录入区做得更清晰。</div>
+
+        <label>目标套餐</label>
+        <select id="f-product-select" onchange="onProductSelect()">
+          <option value="">加载中...</option>
+        </select>
+        <div class="custom-product" id="custom-product-wrap">
+          <label>自定义 Product ID</label>
+          <input id="f-product-custom" placeholder="product-xxxxxx">
+        </div>
+        <input type="hidden" id="f-product" value="product-1df3e1">
+
+        <label>邀请码</label>
+        <input id="f-invitation" placeholder="可选">
+
+        <label>Cookie String</label>
+        <textarea id="f-cookie" rows="3" placeholder="可选"></textarea>
+      </div>
+
+      <div class="form-card">
+        <h4>抢购参数</h4>
+        <div class="form-row">
+          <div><label>极速并发</label><input id="f-turbo" type="number" value="10"></div>
+          <div><label>普通并发</label><input id="f-normal" type="number" value="5"></div>
+          <div><label>极速时长(s)</label><input id="f-duration" type="number" value="5" step="0.5"></div>
+        </div>
+
+        <div class="form-row">
+          <div><label>最大重试</label><input id="f-retry" type="number" value="2000"></div>
+          <div><label>抢购时间</label><input id="f-time" value="10:00:00"></div>
+          <div><label>请求超时(s)</label><input id="f-timeout" type="number" value="10"></div>
+        </div>
+
+        <div class="helper-grid" style="margin-top:16px">
+          <div class="summary-card accent" style="min-height:auto;padding:16px">
+            <div class="label">极速阶段</div>
+            <div class="meta">适合开抢前几秒做高频打点，追求第一时间命中。</div>
+          </div>
+          <div class="summary-card" style="min-height:auto;padding:16px">
+            <div class="label">普通阶段</div>
+            <div class="meta">适合在高峰过去后续跑，降低网络和限流压力。</div>
+          </div>
+        </div>
+      </div>
     </div>
-    <input type="hidden" id="f-product" value="product-1df3e1">
-    <label>邀请码</label><input id="f-invitation" placeholder="可选">
-    <label>Cookie String</label><textarea id="f-cookie" rows="2" placeholder="可选"></textarea>
-    <div class="form-row">
-      <div><label>极速并发</label><input id="f-turbo" type="number" value="10"></div>
-      <div><label>普通并发</label><input id="f-normal" type="number" value="5"></div>
-      <div><label>极速时长(s)</label><input id="f-duration" type="number" value="5" step="0.5"></div>
-    </div>
-    <div class="form-row">
-      <div><label>最大重试</label><input id="f-retry" type="number" value="2000"></div>
-      <div><label>抢购时间</label><input id="f-time" value="10:00:00"></div>
-      <div><label>请求超时(s)</label><input id="f-timeout" type="number" value="10"></div>
-    </div>
+
     <div class="actions">
-      <button class="btn btn-primary" onclick="saveAccount()">保存</button>
-      <button class="btn" style="background:var(--border)" onclick="closeAccountForm()">取消</button>
+      <button class="btn btn-primary" id="save-account-btn" onclick="saveAccount()">保存账号</button>
+      <button class="btn btn-secondary" onclick="closeAccountForm()">取消</button>
     </div>
   </div>
 </div>
+
+<div class="toast-stack" id="toast-stack"></div>
 
 <script>
 const $ = s => document.querySelector(s);
@@ -198,8 +849,105 @@ const $$ = s => document.querySelectorAll(s);
 let ws = null;
 let currentSessionId = null;
 let productMap = {};
+let cachedAccounts = [];
+let cachedSessions = [];
+let wsReconnectTimer = null;
 
-// ─── Tabs ───
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function notify(type, title, message) {
+  const stack = $('#toast-stack');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  const iconMap = {info:'ℹ', success:'✓', warn:'⚠', error:'✕'};
+  toast.innerHTML = `<div class="icon">${iconMap[type] || '•'}</div><div><strong>${escapeHtml(title)}</strong><p>${escapeHtml(message)}</p></div>`;
+  stack.appendChild(toast);
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateY(8px)';
+    setTimeout(() => toast.remove(), 240);
+  }, 3200);
+}
+
+async function api(url, options = {}) {
+  let resp;
+  try {
+    resp = await fetch(url, options);
+  } catch (error) {
+    throw new Error(`网络请求失败：${error.message}`);
+  }
+
+  let data;
+  try {
+    data = await resp.json();
+  } catch (error) {
+    throw new Error('接口返回了非 JSON 内容');
+  }
+
+  if (!resp.ok) {
+    throw new Error(data.error || `请求失败 (${resp.status})`);
+  }
+
+  if (data && typeof data === 'object' && !Array.isArray(data) && data.error) {
+    throw new Error(data.error);
+  }
+
+  return data;
+}
+
+function updateWsState(state, text) {
+  const pill = $('#ws-pill');
+  pill.classList.remove('connected', 'disconnected');
+  if (state === 'connected') pill.classList.add('connected');
+  if (state === 'disconnected') pill.classList.add('disconnected');
+  $('#ws-status').textContent = text;
+}
+
+function refreshOverview() {
+  $('#summary-accounts').textContent = cachedAccounts.length;
+  $('#summary-active').textContent = cachedAccounts.filter(a => a.is_active).length;
+  $('#summary-sessions').textContent = cachedSessions.length;
+}
+
+async function loadRuntimeStatus() {
+  try {
+    const data = await api('/api/rush/status');
+    $('#summary-running').textContent = Object.keys(data || {}).length;
+  } catch (_) {
+    $('#summary-running').textContent = '0';
+  }
+}
+
+function productNameFor(pid) {
+  return productMap[pid] || pid || '未配置';
+}
+
+function productTag(pid) {
+  if (!pid) return '<span class="subtle">-</span>';
+  const name = productNameFor(pid);
+  if (name === pid) return `<span class="mono">${escapeHtml(pid)}</span>`;
+  return `<span class="product-tag">${escapeHtml(name)}</span>`;
+}
+
+function statusBadge(status) {
+  const cls = {
+    success:'badge-success',
+    failed:'badge-failed',
+    running:'badge-running',
+    stopped:'badge-stopped',
+    pending:'badge-pending'
+  }[status] || 'badge-pending';
+  return `<span class="badge ${cls}">${escapeHtml(status)}</span>`;
+}
+
+// Tabs
 $$('.tab').forEach(tab => {
   tab.onclick = () => {
     $$('.tab').forEach(t => t.classList.remove('active'));
@@ -211,25 +959,40 @@ $$('.tab').forEach(tab => {
   };
 });
 
-// ─── WebSocket ───
+// WebSocket
 function connectWS() {
   const proto = location.protocol === 'https:' ? 'wss' : 'ws';
+  updateWsState('pending', 'WebSocket 连接中…');
   ws = new WebSocket(`${proto}://${location.host}/ws`);
-  ws.onopen = () => { $('#ws-status').textContent = 'WebSocket: connected'; $('#ws-status').style.color = 'var(--green)'; };
-  ws.onclose = () => { $('#ws-status').textContent = 'WebSocket: disconnected'; $('#ws-status').style.color = 'var(--red)'; setTimeout(connectWS, 3000); };
+
+  ws.onopen = () => {
+    updateWsState('connected', 'WebSocket 已连接');
+    if (wsReconnectTimer) {
+      clearTimeout(wsReconnectTimer);
+      wsReconnectTimer = null;
+    }
+  };
+
+  ws.onclose = () => {
+    updateWsState('disconnected', 'WebSocket 已断开，正在重连…');
+    wsReconnectTimer = setTimeout(connectWS, 3000);
+  };
+
+  ws.onerror = () => {
+    updateWsState('disconnected', 'WebSocket 连接异常');
+  };
+
   ws.onmessage = e => {
     const ev = JSON.parse(e.data);
     handleEvent(ev);
   };
 }
-connectWS();
 
 function handleEvent(ev) {
   const logArea = $('#log-area');
   const line = document.createElement('div');
   line.className = 'log-line';
-
-  const ts = new Date(ev.timestamp * 1000).toLocaleTimeString('zh-CN');
+  const ts = ev.timestamp ? new Date(ev.timestamp * 1000).toLocaleTimeString('zh-CN') : new Date().toLocaleTimeString('zh-CN');
 
   switch(ev.type) {
     case 'rush_start':
@@ -242,24 +1005,34 @@ function handleEvent(ev) {
       break;
     case 'batch_result':
       updateLiveStats(ev.stats);
-      if (ev.attempt % (ev.batch_size * 5) === 0 || ev.reasons[0] !== '售罄') {
+      if (ev.attempt % (ev.batch_size * 5) === 0 || ev.reasons?.[0] !== '售罄') {
         line.classList.add('info');
         const mode = ev.is_turbo ? '极速' : '普通';
-        line.textContent = `[${ts}] #${ev.attempt} [${mode}] ${ev.reasons[0]}`;
+        line.textContent = `[${ts}] #${ev.attempt} [${mode}] ${ev.reasons?.[0] || '处理中'}`;
       }
       break;
     case 'rush_success':
       line.classList.add('success');
-      line.textContent = `[${ts}] 🎉 抢购成功! bizId=${ev.biz_id}`;
+      line.textContent = `[${ts}] 🎉 抢购成功！bizId=${ev.biz_id}`;
       updateLiveStats(ev.stats);
+      currentSessionId = null;
+      loadHistory();
+      loadRuntimeStatus();
+      notify('success', '抢购成功', `bizId: ${ev.biz_id}`);
       break;
     case 'auth_expired':
       line.classList.add('error');
       line.textContent = `[${ts}] ❌ 会话过期，请更新 Token`;
+      currentSessionId = null;
+      loadRuntimeStatus();
+      notify('error', '认证失效', 'Authorization 已过期，请更新账号配置。');
       break;
     case 'captcha_required':
       line.classList.add('error');
       line.textContent = `[${ts}] ❌ 需要安全验证`;
+      currentSessionId = null;
+      loadRuntimeStatus();
+      notify('warn', '需要安全验证', '请先在浏览器里完成一次安全验证后再重试。');
       break;
     case 'throttled':
       line.classList.add('warn');
@@ -267,15 +1040,19 @@ function handleEvent(ev) {
       break;
     case 'network_error':
       line.classList.add('warn');
-      line.textContent = `[${ts}] ⚠️ 网络异常`;
+      line.textContent = `[${ts}] ⚠️ 网络异常，已进入降速恢复`;
       break;
     case 'rush_end':
       line.classList.add('info');
-      line.textContent = `[${ts}] 抢购结束 (${ev.reason})`;
+      line.textContent = `[${ts}] 抢购结束（${ev.reason}）`;
+      updateLiveStats(ev.stats);
+      currentSessionId = null;
+      loadHistory();
+      loadRuntimeStatus();
       break;
     case 'error':
       line.classList.add('error');
-      line.textContent = `[${ts}] 错误: ${ev.message}`;
+      line.textContent = `[${ts}] 错误：${ev.message}`;
       break;
     default:
       line.classList.add('info');
@@ -295,20 +1072,18 @@ function updateLiveStats(stats) {
   $('#s-success').textContent = stats.successes || 0;
   $('#s-error').textContent = stats.errors || 0;
   $('#s-rate').textContent = (stats.rate || 0).toFixed(0);
-  const sec = ((stats.elapsed_ms || 0) / 1000).toFixed(1);
-  $('#s-elapsed').textContent = sec + 's';
+  $('#s-elapsed').textContent = (((stats.elapsed_ms || 0) / 1000).toFixed(1)) + 's';
 }
 
-// ─── Products ───
+// Products
 async function loadProducts() {
-  const resp = await fetch('/api/products');
-  const products = await resp.json();
+  const products = await api('/api/products');
   productMap = {};
   products.forEach(p => { if (p.id !== '_custom') productMap[p.id] = p.name; });
   const sel = $('#f-product-select');
   sel.innerHTML = '';
   products.forEach(p => {
-    sel.innerHTML += `<option value="${p.id}">${p.name}</option>`;
+    sel.innerHTML += `<option value="${escapeHtml(p.id)}">${escapeHtml(p.name)}</option>`;
   });
 }
 
@@ -324,65 +1099,71 @@ function onProductSelect() {
   }
 }
 
-function getProductName(pid) {
-  return productMap[pid] || pid;
-}
-
-function productTag(pid) {
-  const name = getProductName(pid);
-  if (name === pid) return `<span class="mono">${pid}</span>`;
-  return `<span class="product-tag">${name}</span>`;
-}
-
-// ─── .env Import ───
+// .env Import
 async function checkEnv() {
   try {
-    const resp = await fetch('/api/env/check');
-    const data = await resp.json();
+    const data = await api('/api/env/check');
     if (data.available) {
       $('#env-banner').style.display = 'flex';
       $('#env-product-info').textContent = `${data.product_name} (${data.product_id})`;
     }
-  } catch(e) {}
-}
-
-async function importEnv() {
-  const resp = await fetch('/api/env/import', { method: 'POST' });
-  const data = await resp.json();
-  if (data.ok) {
-    loadAccounts();
-    addLog('info', '已从 .env 导入账号');
-  } else if (data.info) {
-    alert(data.info);
-  } else {
-    alert('导入失败: ' + (data.error || '未知错误'));
+  } catch (_) {
+    $('#env-banner').style.display = 'none';
   }
 }
 
-// ─── Accounts ───
+async function importEnv() {
+  try {
+    const data = await api('/api/env/import', { method: 'POST' });
+    if (data.ok) {
+      await loadAccounts();
+      await loadAccountSelect();
+      notify('success', '导入成功', '已从 .env 导入默认账号。');
+    } else if (data.info) {
+      notify('info', '无需导入', data.info);
+    }
+  } catch (error) {
+    notify('error', '导入失败', error.message || '未知错误');
+  }
+}
+
+// Accounts
 async function loadAccounts() {
-  const resp = await fetch('/api/accounts');
-  const accounts = await resp.json();
-  const tbody = $('#accounts-tbody');
-  const empty = $('#accounts-empty');
-  tbody.innerHTML = '';
-  if (!accounts.length) { empty.style.display = ''; return; }
-  empty.style.display = 'none';
-  accounts.forEach(a => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td class="mono">${a.id}</td>
-      <td>${a.name || '-'}</td>
-      <td>${productTag(a.product_id)}</td>
-      <td>${a.rush_time}</td>
-      <td>${a.turbo_concurrency}/${a.normal_concurrency}</td>
-      <td>${a.is_active ? '<span class="badge badge-success">启用</span>' : '<span class="badge badge-failed">禁用</span>'}</td>
-      <td>
-        <button class="btn btn-sm" style="background:var(--border)" onclick='editAccount(${JSON.stringify(a)})'>编辑</button>
-        <button class="btn btn-danger btn-sm" onclick="delAccount('${a.id}')">删除</button>
-      </td>`;
-    tbody.appendChild(tr);
-  });
+  try {
+    const accounts = await api('/api/accounts');
+    cachedAccounts = accounts;
+    const tbody = $('#accounts-tbody');
+    const empty = $('#accounts-empty');
+    tbody.innerHTML = '';
+
+    if (!accounts.length) {
+      empty.style.display = '';
+    } else {
+      empty.style.display = 'none';
+      accounts.forEach(a => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="mono">${escapeHtml(a.id)}</td>
+          <td>${escapeHtml(a.name || '-')}</td>
+          <td>${productTag(a.product_id)}</td>
+          <td>${escapeHtml(a.rush_time || '-')}</td>
+          <td>${escapeHtml(`${a.turbo_concurrency}/${a.normal_concurrency}`)}</td>
+          <td>${a.is_active ? '<span class="badge badge-success">启用</span>' : '<span class="badge badge-failed">禁用</span>'}</td>
+          <td>
+            <div class="actions" style="margin-top:0">
+              <button class="btn btn-secondary btn-sm" onclick='editAccount(${JSON.stringify(a).replace(/'/g, "&#39;")})'>编辑</button>
+              <button class="btn btn-danger btn-sm" onclick="delAccount('${escapeHtml(a.id)}')">删除</button>
+            </div>
+          </td>`;
+        tbody.appendChild(tr);
+      });
+    }
+
+    refreshOverview();
+    await loadRuntimeStatus();
+  } catch (error) {
+    notify('error', '账号加载失败', error.message);
+  }
 }
 
 function openAccountForm(account) {
@@ -429,9 +1210,13 @@ function openAccountForm(account) {
   }
 }
 
-function closeAccountForm() { $('#account-form-modal').classList.remove('show'); }
+function closeAccountForm() {
+  $('#account-form-modal').classList.remove('show');
+}
 
-function editAccount(a) { openAccountForm(a); }
+function editAccount(a) {
+  openAccountForm(a);
+}
 
 async function saveAccount() {
   const id = $('#f-id').value;
@@ -439,69 +1224,141 @@ async function saveAccount() {
   let productId;
   if (selVal === '_custom') {
     productId = $('#f-product-custom').value.trim();
-    if (!productId) { alert('请输入自定义 Product ID'); return; }
+    if (!productId) {
+      notify('warn', '缺少 Product ID', '请输入自定义 Product ID。');
+      return;
+    }
   } else {
     productId = selVal;
   }
+
   const data = {
-    name: $('#f-name').value,
-    authorization: $('#f-auth').value,
+    name: $('#f-name').value.trim(),
+    authorization: $('#f-auth').value.trim(),
     product_id: productId,
-    invitation_code: $('#f-invitation').value,
-    cookie_string: $('#f-cookie').value,
-    turbo_concurrency: parseInt($('#f-turbo').value),
-    normal_concurrency: parseInt($('#f-normal').value),
+    invitation_code: $('#f-invitation').value.trim(),
+    cookie_string: $('#f-cookie').value.trim(),
+    turbo_concurrency: parseInt($('#f-turbo').value, 10),
+    normal_concurrency: parseInt($('#f-normal').value, 10),
     turbo_duration: parseFloat($('#f-duration').value),
-    max_retry: parseInt($('#f-retry').value),
-    rush_time: $('#f-time').value,
-    request_timeout: parseInt($('#f-timeout').value),
+    max_retry: parseInt($('#f-retry').value, 10),
+    rush_time: $('#f-time').value.trim(),
+    request_timeout: parseInt($('#f-timeout').value, 10),
   };
-  if (!data.authorization) { alert('Authorization 不能为空'); return; }
-  if (id) {
-    await fetch(`/api/accounts/${id}`, { method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) });
-  } else {
-    await fetch('/api/accounts', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) });
+
+  if (!data.authorization) {
+    notify('warn', 'Authorization 不能为空', '请先填入有效的 JWT Token。');
+    return;
   }
-  closeAccountForm();
-  loadAccounts();
+
+  try {
+    $('#save-account-btn').disabled = true;
+    if (id) {
+      await api(`/api/accounts/${id}`, {
+        method: 'PUT',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(data)
+      });
+      notify('success', '账号已更新', '配置已经保存。');
+    } else {
+      await api('/api/accounts', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(data)
+      });
+      notify('success', '账号已创建', '新的账号配置已经加入列表。');
+    }
+    closeAccountForm();
+    await loadAccounts();
+    await loadAccountSelect();
+  } catch (error) {
+    notify('error', '保存失败', error.message);
+  } finally {
+    $('#save-account-btn').disabled = false;
+  }
 }
 
 async function delAccount(id) {
   if (!confirm('确定删除此账号？')) return;
-  await fetch(`/api/accounts/${id}`, { method: 'DELETE' });
-  loadAccounts();
+  try {
+    await api(`/api/accounts/${id}`, { method: 'DELETE' });
+    await loadAccounts();
+    await loadAccountSelect();
+    notify('success', '账号已删除', `账号 ${id} 已从列表移除。`);
+  } catch (error) {
+    notify('error', '删除失败', error.message);
+  }
 }
 
-// ─── Rush ───
+// Rush
+function renderRushAccountMeta() {
+  const accountId = $('#rush-account').value;
+  const target = cachedAccounts.find(a => a.id === accountId);
+  if (!target) {
+    $('#rush-account-meta').textContent = '请选择一个启用账号后开始任务。';
+    return;
+  }
+  $('#rush-account-meta').innerHTML = `当前将使用 <strong>${escapeHtml(target.name || target.id)}</strong>，目标套餐为 ${productTag(target.product_id)}，抢购时间 <span class="mono">${escapeHtml(target.rush_time)}</span>。`;
+}
+
 async function loadAccountSelect() {
-  const resp = await fetch('/api/accounts');
-  const accounts = await resp.json();
   const sel = $('#rush-account');
   sel.innerHTML = '<option value="">-- 选择账号 --</option>';
-  accounts.filter(a => a.is_active).forEach(a => {
-    const pname = getProductName(a.product_id);
-    sel.innerHTML += `<option value="${a.id}">${a.name || a.id} — ${pname}</option>`;
+  cachedAccounts.filter(a => a.is_active).forEach(a => {
+    const pname = productNameFor(a.product_id);
+    sel.innerHTML += `<option value="${escapeHtml(a.id)}">${escapeHtml(a.name || a.id)} — ${escapeHtml(pname)}</option>`;
   });
+  renderRushAccountMeta();
 }
+
+$('#rush-account').addEventListener('change', renderRushAccountMeta);
 
 async function startRush() {
   const accountId = $('#rush-account').value;
-  if (!accountId) { alert('请选择账号'); return; }
+  if (!accountId) {
+    notify('warn', '还没选账号', '请先选择一个启用账号。');
+    return;
+  }
   $('#log-area').innerHTML = '';
-  const resp = await fetch('/api/rush/start', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({account_id: accountId}) });
-  const data = await resp.json();
-  if (data.session_id) {
+  try {
+    $('#start-btn').disabled = true;
+    const data = await api('/api/rush/start', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({account_id: accountId})
+    });
     currentSessionId = data.session_id;
-    addLog('info', `抢购任务已启动, session: ${data.session_id}`);
-  } else {
-    addLog('error', `启动失败: ${data.error}`);
+    addLog('info', `抢购任务已启动，session: ${data.session_id}`);
+    notify('success', '任务已启动', `session: ${data.session_id}`);
+    await loadHistory();
+    await loadRuntimeStatus();
+  } catch (error) {
+    addLog('error', `启动失败：${error.message}`);
+    notify('error', '启动失败', error.message);
+  } finally {
+    $('#start-btn').disabled = false;
   }
 }
 
 async function stopRush() {
-  if (!currentSessionId) { alert('没有运行中的任务'); return; }
-  await fetch('/api/rush/stop', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({session_id: currentSessionId}) });
-  addLog('warn', '正在停止...');
+  if (!currentSessionId) {
+    notify('warn', '没有运行中的任务', '当前没有可停止的 session。');
+    return;
+  }
+  try {
+    $('#stop-btn').disabled = true;
+    await api('/api/rush/stop', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({session_id: currentSessionId})
+    });
+    addLog('warn', '正在停止当前任务…');
+    notify('info', '正在停止', '已向后端发送停止信号。');
+  } catch (error) {
+    notify('error', '停止失败', error.message);
+  } finally {
+    $('#stop-btn').disabled = false;
+  }
 }
 
 function addLog(cls, text) {
@@ -513,45 +1370,62 @@ function addLog(cls, text) {
   logArea.scrollTop = logArea.scrollHeight;
 }
 
-// ─── History ───
+// History
 async function loadHistory() {
-  const [sessionsResp, accountsResp] = await Promise.all([
-    fetch('/api/sessions?limit=50'),
-    fetch('/api/accounts'),
-  ]);
-  const sessions = await sessionsResp.json();
-  const accounts = await accountsResp.json();
-  const accountMap = {};
-  accounts.forEach(a => { accountMap[a.id] = a; });
+  try {
+    const [sessions, accounts] = await Promise.all([
+      api('/api/sessions?limit=50'),
+      api('/api/accounts')
+    ]);
+    cachedSessions = sessions;
+    if (!cachedAccounts.length) cachedAccounts = accounts;
+    const accountMap = {};
+    accounts.forEach(a => { accountMap[a.id] = a; });
 
-  const tbody = $('#history-tbody');
-  const empty = $('#history-empty');
-  tbody.innerHTML = '';
-  if (!sessions.length) { empty.style.display = ''; return; }
-  empty.style.display = 'none';
-  sessions.forEach(s => {
-    const badgeCls = {success:'badge-success',failed:'badge-failed',running:'badge-running',stopped:'badge-stopped',pending:'badge-pending'}[s.status] || 'badge-pending';
-    const acc = accountMap[s.account_id];
-    const pname = acc ? getProductName(acc.product_id) : s.account_id;
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td class="mono">${s.id}</td>
-      <td>${acc ? (acc.name || acc.id) : s.account_id}</td>
-      <td>${productTag(acc ? acc.product_id : '')}</td>
-      <td><span class="badge ${badgeCls}">${s.status}</span></td>
-      <td>${s.total_attempts}</td>
-      <td>${s.success_count}</td>
-      <td>${(s.elapsed_ms/1000).toFixed(1)}s</td>
-      <td class="mono">${s.result_biz_id || '-'}</td>
-      <td>${s.started_at ? new Date(s.started_at).toLocaleString('zh-CN') : '-'}</td>`;
-    tbody.appendChild(tr);
-  });
+    const tbody = $('#history-tbody');
+    const empty = $('#history-empty');
+    tbody.innerHTML = '';
+    if (!sessions.length) {
+      empty.style.display = '';
+    } else {
+      empty.style.display = 'none';
+      sessions.forEach(s => {
+        const acc = accountMap[s.account_id];
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="mono">${escapeHtml(s.id)}</td>
+          <td>${escapeHtml(acc ? (acc.name || acc.id) : s.account_id)}</td>
+          <td>${productTag(acc ? acc.product_id : '')}</td>
+          <td>${statusBadge(s.status)}</td>
+          <td>${escapeHtml(s.total_attempts ?? 0)}</td>
+          <td>${escapeHtml(s.success_count ?? 0)}</td>
+          <td>${escapeHtml(((s.elapsed_ms || 0) / 1000).toFixed(1))}s</td>
+          <td class="mono">${escapeHtml(s.result_biz_id || '-')}</td>
+          <td>${escapeHtml(s.started_at ? new Date(s.started_at).toLocaleString('zh-CN') : '-')}</td>`;
+        tbody.appendChild(tr);
+      });
+    }
+    refreshOverview();
+    await loadRuntimeStatus();
+  } catch (error) {
+    notify('error', '历史记录加载失败', error.message);
+  }
 }
 
-// ─── Init ───
-loadProducts();
-loadAccounts();
-checkEnv();
+// Init
+async function bootstrap() {
+  try {
+    await loadProducts();
+    await loadAccounts();
+    await Promise.all([checkEnv(), loadAccountSelect(), loadHistory(), loadRuntimeStatus()]);
+    connectWS();
+    setInterval(loadRuntimeStatus, 5000);
+  } catch (error) {
+    notify('error', '初始化失败', error.message || '请刷新页面后重试。');
+  }
+}
+
+bootstrap();
 </script>
 </body>
 </html>
